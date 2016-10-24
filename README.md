@@ -17,19 +17,19 @@ Once the plugin has been installed, it may be enabled inside your Gruntfile with
 grunt.loadNpmTasks('grunt-gemini-runner');
 ```
 
-## The "gemini_runner" task
+## The "gemini-runner" task
 
 ### Overview
-In your project's Gruntfile, add a section named `gemini_runner` to the data object passed into `grunt.initConfig()`.
+In your project's Gruntfile, add a section named `gemini-runner` to the data object passed into `grunt.initConfig()`.
 
 ```js
 grunt.initConfig({
-  gemini_runner: {
-    options: {
-      // Task-specific options go here.
-    },
+  gemini-runner: {
+
     your_target: {
-      // Target-specific file lists and/or options go here.
+        options: {
+          // Task-specific options go here.
+        },
     },
   },
 });
@@ -37,17 +37,27 @@ grunt.initConfig({
 
 ### Options
 
-#### options.separator
+#### options.task
 Type: `String`
-Default value: `',  '`
+Default value: `'test'`
 
-A string value that is used to do something with whatever.
+A string value that is used to defined starts test or update tasks.
 
-#### options.punctuation
+#### options.config
 Type: `String`
-Default value: `'.'`
+Default value: `'.gemini.yml'`
 
-A string value that is used to do something else with whatever else.
+A string value that is used to define config files.
+
+#### options.reporter
+Type: `String`
+
+A string value that is used to determine whether the report was created on the test results.
+
+#### options.local
+Type: `Boolean`
+
+A string value that is used to determine whether the test is carried out locally or using a Cloud service.
 
 ### Usage Examples
 
@@ -55,35 +65,13 @@ A string value that is used to do something else with whatever else.
 In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
 
 ```js
-grunt.initConfig({
-  gemini_runner: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
+'gemini-runner': {
+    'local-update': {
+        options: {
+            task: 'update',
+            config: '.gemini-local.yml',
+            local: true
+        }
+    }
+}
 ```
-
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
-
-```js
-grunt.initConfig({
-  gemini_runner: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
-```
-
-## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
-
-## Release History
-_(Nothing yet)_
