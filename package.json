@@ -30,6 +30,7 @@
     "grunt-contrib-jshint": "^0.9.2",
     "grunt-contrib-clean": "^0.5.0",
     "grunt-contrib-nodeunit": "^0.3.3",
+    "phantomjs": "~1.9.19",
     "grunt": "~0.4.5"
   },
   "keywords": [
