@@ -25,13 +25,12 @@ In your project's Gruntfile, add a section named `gemini-runner` to the data obj
 ```js
 grunt.initConfig({
   gemini-runner: {
-
     your_target: {
         options: {
           // Task-specific options go here.
-        },
-    },
-  },
+        }
+    }
+  }
 });
 ```
 
