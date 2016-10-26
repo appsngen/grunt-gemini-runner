@@ -33,7 +33,7 @@ module.exports = function(grunt) {
             args.push('--reporter', options.reporter);
         }
 
-        if (options.task === 'local') {
+        if (options.local) {
             phantom = grunt.util.spawn({
                 cmd: 'phantomjs',
                 args: ['--webdriver=4444'],
@@ -49,10 +49,10 @@ module.exports = function(grunt) {
                     next();
                 }
             });
-        }
 
-        if (typeof phantom === 'undefined') {
-            grunt.fail.fatal(cmd + ' task failed.');
+            if (typeof phantom === 'undefined') {
+                grunt.fail.fatal('PhantomJS task failed.');
+            }
         }
 
         gemini = grunt.util.spawn({
@@ -72,7 +72,7 @@ module.exports = function(grunt) {
         });
 
         if (typeof gemini === 'undefined') {
-            grunt.fail.fatal(cmd + ' task failed.');
+            grunt.fail.fatal('Gemini task failed.');
         }
         gemini.stdout.on('data', function (buf) {
             grunt.log.write(String(buf));
