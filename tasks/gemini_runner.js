@@ -17,7 +17,8 @@ module.exports = function(grunt) {
         var cmd = 'gemini';
         var next = this.async();
         var args = [];
-        var gemini, phantom;
+        var polyServeModule = require('../../polyserve/lib/start_server.js');
+        var gemini, phantom, polyServer, polyServerOptions;
 
         if (options.task) {
             args.push(options.task);
@@ -54,6 +55,14 @@ module.exports = function(grunt) {
                 grunt.fail.fatal('PhantomJS task failed.');
             }
         }
+
+        polyServerOptions = {
+            root: process.cwd(),
+            port: 8080,
+            hostname: 'localhost'
+        };
+
+        polyServer = polyServeModule.startServer(polyServerOptions);
 
         gemini = grunt.util.spawn({
             cmd: cmd,
