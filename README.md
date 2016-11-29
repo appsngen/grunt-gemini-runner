@@ -1,4 +1,4 @@
-# grunt-gemini-runner
+# grunt-gemini-runner [![Build Status](https://secure.travis-ci.org/appsngen/grunt-gemini-runner.png?branch=master)](https://travis-ci.org/appsngen/grunt-gemini-runner)
 
 > A grunt plugin to run Gemini tests.
 
