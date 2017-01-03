@@ -30,7 +30,7 @@ module.exports = function(grunt) {
                     args: ['phantomjs.cmd']
                 }, function (err, result, code) {
                     if (err) {
-                        grunt.fail.error(err, code);
+                        grunt.util.error(err, code);
                         next(err);
                     } else {
                         command = result && result.stdout &&
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
                 });
             } else {
                 if (process.platform !== 'linux') {
-                    grunt.fail.error('Platform ' + process.platform + ' is not supported and wasn\'t tested.\n' +
+                    grunt.util.error('Platform ' + process.platform + ' is not supported and wasn\'t tested.\n' +
                         'Trying to use as linux based distribution.');
                 }
 
@@ -49,7 +49,7 @@ module.exports = function(grunt) {
                     args: ['phantomjs']
                 }, function (err, result, code) {
                     if (err) {
-                        grunt.fail.error(err, code);
+                        grunt.util.error(err, code);
                         next(err);
                     } else {
                         command = result && result.stdout;
@@ -68,7 +68,7 @@ module.exports = function(grunt) {
                 }
             }, function (err, result, code) {
                 if (err) {
-                    grunt.fail.error(err, code);
+                    grunt.util.error(err, code);
                     next(err);
                 }
             });
@@ -91,7 +91,7 @@ module.exports = function(grunt) {
         if (options.local) {
             getPhantomJsExecutable(function (err, result, code) {
                 if (err) {
-                    grunt.fail.error(err, code);
+                    grunt.util.error(err, code);
                     next(err);
                 } else {
                     phantom = runPhantomjs(result, directory);
@@ -105,7 +105,7 @@ module.exports = function(grunt) {
 
         polyServerOptions = {
             root: process.cwd(),
-            port: 8080,
+            port: 8085,
             hostname: 'localhost'
         };
 
@@ -118,7 +118,7 @@ module.exports = function(grunt) {
                 cwd: directory
             }
         }, function (err, result, code) {
-            // phantom.kill();
+            phantom.kill();
             if (err) {
                 grunt.fail.fatal(err, code);
                 next(code);
@@ -127,8 +127,6 @@ module.exports = function(grunt) {
                 next();
             }
         });
-
-        console.log(gemini.pid);
 
         if (typeof gemini === 'undefined') {
             grunt.fail.fatal('Gemini task failed.');
