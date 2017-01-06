@@ -30,7 +30,7 @@ module.exports = function(grunt) {
                     args: ['phantomjs.cmd']
                 }, function (err, result, code) {
                     if (err) {
-                        grunt.util.error(err, code);
+                        grunt.log.error(err, code);
                         next(err);
                     } else {
                         command = result && result.stdout &&
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
                 });
             } else {
                 if (process.platform !== 'linux') {
-                    grunt.util.error('Platform ' + process.platform + ' is not supported and wasn\'t tested.\n' +
+                    grunt.log.error('Platform ' + process.platform + ' is not supported and wasn\'t tested.\n' +
                         'Trying to use as linux based distribution.');
                 }
 
@@ -49,7 +49,7 @@ module.exports = function(grunt) {
                     args: ['phantomjs']
                 }, function (err, result, code) {
                     if (err) {
-                        grunt.util.error(err, code);
+                        grunt.log.error(err, code);
                         next(err);
                     } else {
                         command = result && result.stdout;
@@ -68,7 +68,7 @@ module.exports = function(grunt) {
                 }
             }, function (err, result, code) {
                 if (err) {
-                    grunt.util.error(err, code);
+                    grunt.log.error(err, code);
                     next(err);
                 }
             });
@@ -91,7 +91,7 @@ module.exports = function(grunt) {
         if (options.local) {
             getPhantomJsExecutable(function (err, result, code) {
                 if (err) {
-                    grunt.util.error(err, code);
+                    grunt.log.error(err, code);
                     next(err);
                 } else {
                     phantom = runPhantomjs(result, directory);
