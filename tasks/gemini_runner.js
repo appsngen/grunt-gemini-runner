@@ -118,7 +118,10 @@ module.exports = function(grunt) {
                 cwd: directory
             }
         }, function (err, result, code) {
-            phantom.kill();
+            if (phantom) {
+                phantom.kill();
+            }
+
             if (err) {
                 grunt.fail.fatal(err, code);
                 next(code);
