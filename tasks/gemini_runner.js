@@ -14,12 +14,10 @@ module.exports = function(grunt) {
         var options = this.options();
         var directory = '.';
         var cmd = 'gemini';
-        var phantomCmd = /^win/.test(process.platform) ? 'phantomjs.cmd' : 'phantomjs';
         var next = this.async();
         var args = [];
         var polyServeModule = require('../../polyserve/lib/start_server.js');
         var gemini, phantom, polyServer, polyServerOptions;
-        var phantomjsCommand;
 
         var getPhantomJsExecutable = function (callback) {
             var command;
