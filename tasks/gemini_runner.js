@@ -63,7 +63,7 @@ module.exports = function(grunt) {
                     getPhantomJsExecutableOnLinux(callback);
                     break;
                 default:
-                    grunt.log.error('Platform ' + process.platform + ' wasn\'t tested.\n' +
+                    grunt.log.error('Platform ' + process.platform + ' is not supported.\n' +
                         'Trying to use as linux based distribution...');
 
                     getPhantomJsExecutableOnLinux(callback);
