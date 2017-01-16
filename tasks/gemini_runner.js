@@ -9,9 +9,8 @@
 'use strict';
 
 module.exports = function(grunt) {
-
     grunt.registerMultiTask('gemini-runner', 'A grunt plugin to run Gemini tests.', function() {
-
+        var path = require('path');
         var options = this.options();
         var directory = '.';
         var cmd = 'gemini';
@@ -19,6 +18,72 @@ module.exports = function(grunt) {
         var args = [];
         var polyServeModule = require('../../polyserve/lib/start_server.js');
         var gemini, phantom, polyServer, polyServerOptions;
+
+        var getPhantomJsExecutableOnWindows = function (callback) {
+            var command;
+
+            grunt.util.spawn({
+                cmd: 'where',
+                args: ['phantomjs.cmd']
+            }, function (err, result, code) {
+                if (err) {
+                    grunt.log.error(err, code);
+                    next(err);
+                } else {
+                    command = result && result.stdout &&
+                        path.join(path.dirname(result.stdout), 'node_modules\\phantomjs\\bin\\phantomjs');
+                    callback(null, command, code);
+                }
+            });
+        };
+
+        var getPhantomJsExecutableOnLinux = function (callback) {
+            var command;
+
+            grunt.util.spawn({
+                cmd: 'which',
+                args: ['phantomjs']
+            }, function (err, result, code) {
+                if (err) {
+                    grunt.log.error(err, code);
+                    next(err);
+                } else {
+                    command = result && result.stdout;
+                    callback(null, command, code);
+                }
+            });
+        };
+
+        var getPhantomJsExecutable = function (callback) {
+            switch (process.platform) {
+                case 'win32':
+                    getPhantomJsExecutableOnWindows(callback);
+                    break;
+                case 'linux':
+                    getPhantomJsExecutableOnLinux(callback);
+                    break;
+                default:
+                    grunt.log.error('Platform ' + process.platform + ' is not supported.\n' +
+                        'Trying to use as linux based distribution...');
+
+                    getPhantomJsExecutableOnLinux(callback);
+            }
+        };
+
+        var runPhantomjs = function (jsFile, directory) {
+            return grunt.util.spawn({
+                cmd: 'node',
+                args: [jsFile, '--webdriver=4444'],
+                opts: {
+                    cwd: directory
+                }
+            }, function (err, result, code) {
+                if (err) {
+                    grunt.log.error(err, code);
+                    next(err);
+                }
+            });
+        };
 
         if (options.task) {
             args.push(options.task);
@@ -35,25 +100,18 @@ module.exports = function(grunt) {
         }
 
         if (options.local) {
-            phantom = grunt.util.spawn({
-                cmd: 'phantomjs',
-                args: ['--webdriver=4444'],
-                opts: {
-                    cwd: directory
-                }
-            }, function (err, result, code) {
+            getPhantomJsExecutable(function (err, result, code) {
                 if (err) {
-                    grunt.fail.fatal(err, code);
-                    next(code);
+                    grunt.log.error(err, code);
+                    next(err);
                 } else {
-                    grunt.log.ok();
-                    next();
+                    phantom = runPhantomjs(result, directory);
+
+                    if (typeof phantom === 'undefined') {
+                        grunt.fail.fatal('PhantomJS task failed.');
+                    }
                 }
             });
-
-            if (typeof phantom === 'undefined') {
-                grunt.fail.fatal('PhantomJS task failed.');
-            }
         }
 
         polyServerOptions = {
@@ -71,6 +129,10 @@ module.exports = function(grunt) {
                 cwd: directory
             }
         }, function (err, result, code) {
+            if (phantom) {
+                phantom.kill();
+            }
+
             if (err) {
                 grunt.fail.fatal(err, code);
                 next(code);
@@ -83,6 +145,7 @@ module.exports = function(grunt) {
         if (typeof gemini === 'undefined') {
             grunt.fail.fatal('Gemini task failed.');
         }
+
         gemini.stdout.on('data', function (buf) {
             grunt.log.write(String(buf));
         });
@@ -90,5 +153,4 @@ module.exports = function(grunt) {
             grunt.log.error(String(buf));
         });
     });
-
 };
