@@ -19,41 +19,54 @@ module.exports = function(grunt) {
         var polyServeModule = require('../../polyserve/lib/start_server.js');
         var gemini, phantom, polyServer, polyServerOptions;
 
-        var getPhantomJsExecutable = function (callback) {
+        var getPhantomJsExecutableOnWindows = function (callback) {
             var command;
 
-            if (process.platform === 'win32') {
-                grunt.util.spawn({
-                    cmd: 'where',
-                    args: ['phantomjs.cmd']
-                }, function (err, result, code) {
-                    if (err) {
-                        grunt.log.error(err, code);
-                        next(err);
-                    } else {
-                        command = result && result.stdout &&
-                            path.join(path.dirname(result.stdout), 'node_modules\\phantomjs\\bin\\phantomjs');
-                        callback(null, command, code);
-                    }
-                });
-            } else {
-                if (process.platform !== 'linux') {
-                    grunt.log.error('Platform ' + process.platform + ' is not supported and wasn\'t tested.\n' +
-                        'Trying to use as linux based distribution.');
+            grunt.util.spawn({
+                cmd: 'where',
+                args: ['phantomjs.cmd']
+            }, function (err, result, code) {
+                if (err) {
+                    grunt.log.error(err, code);
+                    next(err);
+                } else {
+                    command = result && result.stdout &&
+                        path.join(path.dirname(result.stdout), 'node_modules\\phantomjs\\bin\\phantomjs');
+                    callback(null, command, code);
                 }
+            });
+        };
 
-                grunt.util.spawn({
-                    cmd: 'which',
-                    args: ['phantomjs']
-                }, function (err, result, code) {
-                    if (err) {
-                        grunt.log.error(err, code);
-                        next(err);
-                    } else {
-                        command = result && result.stdout;
-                        callback(null, command, code);
-                    }
-                });
+        var getPhantomJsExecutableOnLinux = function (callback) {
+            var command;
+
+            grunt.util.spawn({
+                cmd: 'which',
+                args: ['phantomjs']
+            }, function (err, result, code) {
+                if (err) {
+                    grunt.log.error(err, code);
+                    next(err);
+                } else {
+                    command = result && result.stdout;
+                    callback(null, command, code);
+                }
+            });
+        };
+
+        var getPhantomJsExecutable = function (callback) {
+            switch (process.platform) {
+                case 'win32':
+                    getPhantomJsExecutableOnWindows(callback);
+                    break;
+                case 'linux':
+                    getPhantomJsExecutableOnLinux(callback);
+                    break;
+                default:
+                    grunt.log.error('Platform ' + process.platform + ' wasn\'t tested.\n' +
+                        'Trying to use as linux based distribution...');
+
+                    getPhantomJsExecutableOnLinux(callback);
             }
         };
 
